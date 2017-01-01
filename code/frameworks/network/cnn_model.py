@@ -9,7 +9,8 @@ def floatX(X, dtype):
   return np.asarray(X, dtype=dtype)
 
 def init_weights(shape, dtype):
-  return theano.shared(floatX(np.zeros(shape), dtype))
+  np.random.seed(42)
+  return theano.shared(floatX(np.random.randn(*shape) * .01, dtype))
 
 def rectify(x):
   return T.maximum(x, 0.)
@@ -78,5 +79,3 @@ def init_variables(x, t, params, dtype):
 	predict = theano.function([x], y, allow_input_downcast=True)
 
 	return p_y_given_x, y, cost, updates, train, predict
-
-
