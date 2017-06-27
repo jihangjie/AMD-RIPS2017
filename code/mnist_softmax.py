@@ -25,11 +25,14 @@ from __future__ import print_function
 import argparse
 import os, sys
 
+import stochastic_round as sr
+
 from tensorflow.examples.tutorials.mnist import input_data
 
 import tensorflow as tf
 
 FLAGS = None
+
 
 def main(_):
   # Import data
@@ -38,7 +41,6 @@ def main(_):
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
   W = tf.Variable(tf.zeros([784, 10], dtype=tf.float32))
-  print(W)
   b = tf.Variable(tf.zeros([10], dtype=tf.float32))
   y = tf.matmul(x, W) + b
 
@@ -68,12 +70,16 @@ def main(_):
     os.mkdir('./data')
 
   # train 1000 times, 1000 iterations per model
+  #print(W.eval().sum(axis=0).sum(axis=0))
   for _ in range(1000):
     for _ in range(1000):
       batch_xs, batch_ys = mnist.train.next_batch(100)
       sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+      sr.tensor_round(W, 0)
+      sr.tensor_round(b, 0)
   
     # Test trained model
+    print(tf.argmax(y,1))
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     with open('data/mnist_softmax_float32.txt', 'a+') as f:
