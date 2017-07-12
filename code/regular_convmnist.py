@@ -10,6 +10,7 @@ from theano.tensor.signal.pool import pool_2d
 srng = RandomStreams()
 import os
 
+#import mnist data
 datasets_dir = '/home/yzhang/Downloads/'
 
 def one_hot(x,n):
@@ -99,13 +100,6 @@ def dropout(dtype, X, p=0.):
         X = T.cast(X, dtype=dtype)
     return X
 
-def cast_4(trX, teX, trY, teY, dtype):
-    trX = T.cast(trX, dtype=dtype)
-    teX = T.cast(teX, dtype=dtype)
-    trY = T.cast(trY, dtype=dtype)
-    teY = T.cast(teY, dtype=dtype)
-    return trX, teX, trY, teY
-
 def RMSprop(cost, params, dtype, lr=0.001, rho=0.9, epsilon=1e-6):
     grads = T.grad(cost=cost, wrt=params)
     updates = []
@@ -148,30 +142,18 @@ def fourth_layer(l3, w4, dtype, p_drop_hidden):
 
 def model(X, w, w2, w3, w4, w_o, p_drop_conv, p_drop_hidden, dtype):
     l1 = first_layer(X, w, dtype, p_drop_conv)
-    T.cast(l1, dtype) #TODO: change this to a truncating function
+    
     l2 = second_layer(l1, w2, dtype, p_drop_conv)
-    T.cast(l2, dtype)
     #truncate_2d(w, 14)
     
     l3 = third_layer(l2, w3, dtype, p_drop_conv)
-    T.cast(l3, dtype)
     #truncate_2d(w, 14)
 
     l4 = fourth_layer(l3, w4, dtype, p_drop_hidden)
-    T.cast(l4, dtype)
     #truncate_2d(w, 14)
 
     pyx = softmax(T.dot(l4, w_o))
     return l1, l2, l3, l4, pyx
-
-def cast_6(trX, teX, trY, teY, X, Y, dtype):
-    trX = trX.astype(dtype)
-    teX = teX.astype(dtype)
-    trY = trY.astype(dtype)
-    teY = teY.astype(dtype)
-    X = T.cast(X, dtype=dtype)
-    Y = T.cast(Y, dtype=dtype)
-    return trX, teX, trY, teY, X, Y
 
 def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype):
     noise_l1, noise_l2, noise_l3, noise_l4, noise_py_x = model(X, w, w2, w3, w4, w_o, 0.2, 0.5, dtype)
@@ -187,8 +169,10 @@ def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype):
 
     # train_model with mini-batch training
     for totalEpoch in range(500):
+        #randomly pick 128 samples and use them to train the model
         inx = np.random.randint(len(trY), size = 128)
         cost = train(trX[inx], trY[inx])
+        #evaluate the accuracy on 1000 random test samples
         idx = np.random.randint(len(teY), size = 1000)
         print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
     return trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o
@@ -211,8 +195,6 @@ def main():
     w3 = init_weights((128, 64, 3, 3), dtype0)
     w4 = init_weights((128 * 3 * 3, 625), dtype0)
     w_o = init_weights((625, 10), dtype0)
-
-    #TODO: truncate w's!
 
     trX, teX, trY, teY, X, Y = cast_6(trX, teX, trY, teY, X, Y, dtype0)
     
