@@ -10,7 +10,7 @@ from theano.tensor.signal.pool import pool_2d
 srng = RandomStreams()
 import os
 
-#import mnist data
+#import mnist data from the location specified below
 datasets_dir = '/home/yzhang/Downloads/'
 
 def one_hot(x,n):
@@ -60,26 +60,17 @@ def mnist(ntrain=60000,ntest=10000,onehot=True):
 def floatX(X, dtype0):
     return np.asarray(X, dtype=dtype0)
 
-def truncate_2d(x, bitsize=32):
+def truncate_4d(x, bitsize=32):
   ''' truncate theano varibale
       @param x: theano var
       @return theano variable with truncated value
   '''
   value = x.eval()
-  for row in range(value.shape[0]):
-    for col in range(value.shape[1]):
-      value[row][col] = truncate.truncate(value[row][col], bitsize)
-  x.set_value(value)
-  return x
-
-def truncate_1d(x, bitsize=32):
-  ''' truncate theano varibale
-      @param x: theano var
-      @return theano variable with truncated value
-  '''
-  value = x.eval()
-  for num in range(value.shape[0]):
-      value[num] = truncate.truncate(value[num], bitsize)
+  for num1 in range(value.shape[0]):
+     for num2 in range(value.shape[1]):
+         for num3 in range(value.shape[2]):
+            for num4 in range(value.shape[3]):
+              value[num1][num2][num3][num4] = truncate.truncate(value[num1][num2][num3][num4], bitsize)
   return x
 
 def init_weights(shape, dtype0):
@@ -99,6 +90,24 @@ def dropout(dtype, X, p=0.):
         X /= retain_prob
         X = T.cast(X, dtype=dtype)
     return X
+
+#cast all four inputs to dtype
+def cast_4(trX, teX, trY, teY, dtype):
+    trX = T.cast(trX, dtype=dtype)
+    teX = T.cast(teX, dtype=dtype)
+    trY = T.cast(trY, dtype=dtype)
+    teY = T.cast(teY, dtype=dtype)
+    return trX, teX, trY, teY
+
+#cast all six inputs to dtype
+def cast_6(trX, teX, trY, teY, X, Y, dtype):
+    trX = trX.astype(dtype)
+    teX = teX.astype(dtype)
+    trY = trY.astype(dtype)
+    teY = teY.astype(dtype)
+    X = T.cast(X, dtype=dtype)
+    Y = T.cast(Y, dtype=dtype)
+    return trX, teX, trY, teY, X, Y
 
 def RMSprop(cost, params, dtype, lr=0.001, rho=0.9, epsilon=1e-6):
     grads = T.grad(cost=cost, wrt=params)
@@ -155,7 +164,7 @@ def model(X, w, w2, w3, w4, w_o, p_drop_conv, p_drop_hidden, dtype):
     pyx = softmax(T.dot(l4, w_o))
     return l1, l2, l3, l4, pyx
 
-def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype):
+def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype, numBits):
     noise_l1, noise_l2, noise_l3, noise_l4, noise_py_x = model(X, w, w2, w3, w4, w_o, 0.2, 0.5, dtype)
     l1, l2, l3, l4, py_x = model(X, w, w2, w3, w4, w_o, 0., 0., dtype)
     y_x = T.argmax(py_x, axis=1)
@@ -169,13 +178,14 @@ def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype):
 
     # train_model with mini-batch training
     for totalEpoch in range(500):
-        #randomly pick 128 samples and use them to train the model
+        #train the model with 128 randomly selected training samples
         inx = np.random.randint(len(trY), size = 128)
         cost = train(trX[inx], trY[inx])
-        #evaluate the accuracy on 1000 random test samples
+        truncate_4d(w, numBits)
+        #test the accuracy with 1000 randomly selected test samples
         idx = np.random.randint(len(teY), size = 1000)
         print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
-    return trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o
+    return
 
 
 def main():
@@ -185,7 +195,6 @@ def main():
     teX = teX.reshape(-1, 1, 28, 28)
 
     dtype0 = 'float32'
-    dtype1 = 'float64'
 
     X = T.ftensor4()
     Y = T.fmatrix()
@@ -197,15 +206,9 @@ def main():
     w_o = init_weights((625, 10), dtype0)
 
     trX, teX, trY, teY, X, Y = cast_6(trX, teX, trY, teY, X, Y, dtype0)
-    
-    trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o = train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype0)
-    
-    w = theano.shared(value = np.asarray(w.eval(), dtype = dtype1), name = 'w', borrow = True)
-    w2 = theano.shared(value = np.asarray(w2.eval(), dtype = dtype1), name = 'w2', borrow = True)
-    w3 = theano.shared(value = np.asarray(w3.eval(), dtype = dtype1), name = 'w3', borrow = True)
-    w4 = theano.shared(value = np.asarray(w4.eval(), dtype = dtype1), name = 'w4', borrow = True)
-    w_o = theano.shared(value = np.asarray(w_o.eval(), dtype = dtype1), name = 'w_o', borrow = True)
-    
+
+    numBits = 20
+    train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype0, numBits)
 
 if __name__ == "__main__":
   main()
