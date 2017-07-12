@@ -10,7 +10,7 @@ from theano.tensor.signal.pool import pool_2d
 srng = RandomStreams()
 import os
 
-datasets_dir = '/home/yzhang/Downloads/'
+datasets_dir = '/home/cvajiac/Downloads/'
 
 def one_hot(x,n):
 	if type(x) == list:
@@ -21,20 +21,20 @@ def one_hot(x,n):
 	return o_h
 
 def mnist(ntrain=60000,ntest=10000,onehot=True):
-	data_dir = os.path.join(datasets_dir,'mnist/')
-	fd = open(os.path.join(data_dir,'train-images.idx3-ubyte'))
+	data_dir = os.path.join(datasets_dir,'MNIST/')
+	fd = open(os.path.join(data_dir,'train-images-idx3-ubyte'))
 	loaded = np.fromfile(file=fd,dtype=np.uint8)
 	trX = loaded[16:].reshape((60000,28*28)).astype(float)
 
-	fd = open(os.path.join(data_dir,'train-labels.idx1-ubyte'))
+	fd = open(os.path.join(data_dir,'train-labels-idx1-ubyte'))
 	loaded = np.fromfile(file=fd,dtype=np.uint8)
 	trY = loaded[8:].reshape((60000))
 
-	fd = open(os.path.join(data_dir,'t10k-images.idx3-ubyte'))
+	fd = open(os.path.join(data_dir,'t10k-images-idx3-ubyte'))
 	loaded = np.fromfile(file=fd,dtype=np.uint8)
 	teX = loaded[16:].reshape((10000,28*28)).astype(float)
 
-	fd = open(os.path.join(data_dir,'t10k-labels.idx1-ubyte'))
+	fd = open(os.path.join(data_dir,'t10k-labels-idx1-ubyte'))
 	loaded = np.fromfile(file=fd,dtype=np.uint8)
 	teY = loaded[8:].reshape((10000))
 
@@ -79,6 +79,20 @@ def truncate_1d(x, bitsize=32):
   value = x.eval()
   for num in range(value.shape[0]):
       value[num] = truncate.truncate(value[num], bitsize)
+  return x
+
+def truncate_4d(x, bitsize=32):
+  ''' truncate theano varibale
+      @param x: theano var
+      @return theano variable with truncated value
+  '''
+  value = x.eval()
+  for dim1 in range(value.shape[0]):
+    for dim2 in range(value.shape[1]):
+      for dim3 in range(value.shape[2]):
+        for dim4 in range(value.shape[3]):
+          value[dim1][dim2][dim3][dim4] = truncate.truncate(value[dim1][dim2][dim3][dim4], bitsize)
+  x.set_value(value)
   return x
 
 def init_weights(shape, dtype0):
@@ -187,14 +201,18 @@ def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype):
 
     # train_model with mini-batch training
     for totalEpoch in range(500):
-        inx = np.random.randint(len(trY), size = 128)
+        inx = np.random.randint(len(trY), size = 100)
         cost = train(trX[inx], trY[inx])
         idx = np.random.randint(len(teY), size = 1000)
-        print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
+        if totalEpoch % 10 == 0:
+          print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
+          
     return trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o
 
 
-def main():
+def main(bitsize=32):
+    bitsize = 1
+    print "FL{}".format(bitsize)
     trX, teX, trY, teY = mnist(onehot=True)
 
     trX = trX.reshape(-1, 1, 28, 28)
@@ -212,7 +230,13 @@ def main():
     w4 = init_weights((128 * 3 * 3, 625), dtype0)
     w_o = init_weights((625, 10), dtype0)
 
-    #TODO: truncate w's!
+    # truncate w's!
+    w = truncate_4d(w, bitsize)
+    w2 = truncate_4d(w2, bitsize)
+    w3 = truncate_4d(w3, bitsize)
+    w4 = truncate_2d(w4, bitsize)
+    w_o = truncate_2d(w_o, bitsize)
+    
 
     trX, teX, trY, teY, X, Y = cast_6(trX, teX, trY, teY, X, Y, dtype0)
     
