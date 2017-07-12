@@ -181,7 +181,7 @@ def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype, numBits):
         #train the model with 128 randomly selected training samples
         inx = np.random.randint(len(trY), size = 128)
         cost = train(trX[inx], trY[inx])
-        truncate_4d(w, numBits)
+        w = truncate_4d(w, numBits)
         #test the accuracy with 1000 randomly selected test samples
         idx = np.random.randint(len(teY), size = 1000)
         print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
