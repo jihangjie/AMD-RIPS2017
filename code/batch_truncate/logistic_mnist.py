@@ -31,10 +31,9 @@ def truncate_1d(x, bitsize=32):
       value[num] = truncate.truncate(value[num], bitsize)
   return x
 
-def train(dtype, target, W, b, x, y_, numPrecision):
-  x =  T.cast(x,  dtype=dtype)
-  y_ = T.cast(y_, dtype=dtype)
-
+def train(dtype, W, b, numPrecision):
+  x = T.matrix('x', dtype=dtype)
+  y_ = T.matrix('y', dtype=dtype)
   W = theano.shared(value=np.asarray(W.eval(), dtype=dtype), name='W', borrow=True)
   b = theano.shared(value=np.asarray(b.eval(), dtype=dtype), name='b', borrow=True)
 
@@ -68,9 +67,9 @@ def train(dtype, target, W, b, x, y_, numPrecision):
     batch_ys = np.asarray(batch_ys, dtype=dtype)
   
     train_model(batch_xs, batch_ys)
-    truncate_2d(W, numPrecision)
-    truncate_1d(b, numPrecision)
-  return W, b, x, y, y_
+    W = truncate_2d(W, numPrecision)
+    b = truncate_1d(b, numPrecision)
+  return W, b
 
 #evaluate accuracy of the model using 1000 randomly selected samples from test data
 def find_accuracy(W, b, dtype):
@@ -88,10 +87,8 @@ def main():
   while numBits > 8:
       W = theano.shared(value=np.zeros((784, 10), dtype=dtype0), name='W', borrow=True)
       b = theano.shared(value=np.zeros((10,), dtype=dtype0), name='b', borrow=True)
-      x = T.matrix('x', dtype=dtype0)
-      y_ = T.matrix('y', dtype=dtype0)
   
-      W, b, x, y, y_ = train(dtype0, .00001, W, b, x, y_, numBits)
+      W, b = train(dtype0, W, b, numBits)
       print find_accuracy(W, b, dtype0)
       numBits = numBits-1
 
