@@ -2,8 +2,6 @@ import theano
 import theano.tensor as T
 import numpy as np
 
-import load
-
 from theano.tensor.nnet.conv import conv2d
 from theano.tensor.signal.pool import pool_2d
 
@@ -64,6 +62,7 @@ def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
 
 def init_variables(x, t, params, dtype):
 	p_y_given_x = model(x, *params)
+	print(p_y_given_x.shape)
 	y = T.argmax(p_y_given_x, axis=1)
 
 	cost = T.mean(T.nnet.categorical_crossentropy(p_y_given_x, t))
