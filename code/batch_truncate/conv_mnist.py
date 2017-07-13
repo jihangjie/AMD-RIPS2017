@@ -10,12 +10,8 @@ from theano.tensor.signal.pool import pool_2d
 srng = RandomStreams()
 import os
 
-<<<<<<< HEAD:code/regular_convmnist.py
 datasets_dir = '/home/cvajiac/Downloads/'
-=======
 #import mnist data from the location specified below
-datasets_dir = '/home/yzhang/Downloads/'
->>>>>>> 330d4a57ca89ac5e84e82138b68867331859838d:code/batch_truncate/conv_mnist.py
 
 def one_hot(x,n):
 	if type(x) == list:
@@ -70,19 +66,6 @@ def truncate_4d(x, bitsize=32):
       @return theano variable with truncated value
   '''
   value = x.eval()
-  for num1 in range(value.shape[0]):
-     for num2 in range(value.shape[1]):
-         for num3 in range(value.shape[2]):
-            for num4 in range(value.shape[3]):
-              value[num1][num2][num3][num4] = truncate.truncate(value[num1][num2][num3][num4], bitsize)
-  return x
-
-def truncate_4d(x, bitsize=32):
-  ''' truncate theano varibale
-      @param x: theano var
-      @return theano variable with truncated value
-  '''
-  value = x.eval()
   for dim1 in range(value.shape[0]):
     for dim2 in range(value.shape[1]):
       for dim3 in range(value.shape[2]):
@@ -90,6 +73,19 @@ def truncate_4d(x, bitsize=32):
           value[dim1][dim2][dim3][dim4] = truncate.truncate(value[dim1][dim2][dim3][dim4], bitsize)
   x.set_value(value)
   return x
+
+def truncate_2d(x, bitsize=32):
+  ''' truncate theano varibale
+      @param x: theano var
+      @return theano variable with truncated value
+  '''
+  value = x.eval()
+  for row in range(value.shape[0]):
+    for col in range(value.shape[1]):
+      value[row][col] = truncate.truncate(value[row][col], bitsize)
+  x.set_value(value)
+  return x
+  
 
 def init_weights(shape, dtype0):
     return theano.shared(floatX(np.random.randn(*shape) * 0.01, dtype0))
@@ -196,26 +192,17 @@ def train_model(trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o, dtype, numBits):
 
     # train_model with mini-batch training
     for totalEpoch in range(500):
-<<<<<<< HEAD:code/regular_convmnist.py
         inx = np.random.randint(len(trY), size = 100)
-=======
         #train the model with 128 randomly selected training samples
         inx = np.random.randint(len(trY), size = 128)
->>>>>>> 330d4a57ca89ac5e84e82138b68867331859838d:code/batch_truncate/conv_mnist.py
         cost = train(trX[inx], trY[inx])
         w = truncate_4d(w, numBits)
         #test the accuracy with 1000 randomly selected test samples
         idx = np.random.randint(len(teY), size = 1000)
-<<<<<<< HEAD:code/regular_convmnist.py
         if totalEpoch % 10 == 0:
           print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
           
     return trX, teX, trY, teY, X, Y, w, w2, w3, w4, w_o
-=======
-        print(np.mean(np.argmax(teY[idx], axis=1) == predict(teX[idx])))
-    return
->>>>>>> 330d4a57ca89ac5e84e82138b68867331859838d:code/batch_truncate/conv_mnist.py
-
 
 def main(bitsize=32):
     bitsize = 1
@@ -236,17 +223,13 @@ def main(bitsize=32):
     w4 = init_weights((128 * 3 * 3, 625), dtype0)
     w_o = init_weights((625, 10), dtype0)
 
-<<<<<<< HEAD:code/regular_convmnist.py
     # truncate w's!
     w = truncate_4d(w, bitsize)
     w2 = truncate_4d(w2, bitsize)
     w3 = truncate_4d(w3, bitsize)
     w4 = truncate_2d(w4, bitsize)
     w_o = truncate_2d(w_o, bitsize)
-    
 
-=======
->>>>>>> 330d4a57ca89ac5e84e82138b68867331859838d:code/batch_truncate/conv_mnist.py
     trX, teX, trY, teY, X, Y = cast_6(trX, teX, trY, teY, X, Y, dtype0)
 
     numBits = 20
