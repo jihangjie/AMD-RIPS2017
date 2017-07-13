@@ -1,0 +1,21 @@
+[global]
+floatX = float32
+device = gpu
+
+[lib]
+cnmem = 0.65
+
+[nvcc]
+flags=-D_FORCE_INLINES
+fastmath = True
+
+
+[blas]
+ldflags = -lopenblas
+
+[cuda]
+root = /usr/local/cuda-8.0/bin
+
+[dnn]
+include_path = /usr/include/
+library_path = /usr/lib/x86_64-linux-gnu
