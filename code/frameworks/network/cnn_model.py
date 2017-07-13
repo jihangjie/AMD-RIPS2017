@@ -75,6 +75,7 @@ def init_variables(x, t, params, dtype):
 
 	return p_y_given_x, y, cost, updates, train, predict
 
+'''
 def train_iteration(x_train, t_train, train, batch_size=50, num_iterations=50):
 	'''
 	@x_train: train data x
@@ -91,4 +92,5 @@ def train_iteration(x_train, t_train, train, batch_size=50, num_iterations=50):
 	        cost = train(x_batch, t_batch)
 	        print("--- %s seconds ---" % (time.time() - start_time))
 	return train
+'''
 
