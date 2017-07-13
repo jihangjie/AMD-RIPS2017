@@ -106,7 +106,6 @@ def main():
     cost = T.mean(T.nnet.categorical_crossentropy(noise_py_x, Y))
     params = [w, w2, w3, w4, w_o]
     updates = RMSprop(cost, params, dtype0, lr=0.001)
-    
     train = theano.function(inputs=[X, Y], outputs=cost, updates=updates, allow_input_downcast=True)
     predict = theano.function(inputs=[X], outputs=y_x, allow_input_downcast=True)
 
