@@ -7,8 +7,9 @@ def main():
 
     trX = trX.reshape(-1, 1, 28, 28)
     teX = teX.reshape(-1, 1, 28, 28)
+    numBits=32
 
-    iterate_train(trX, teX, trY, teY)
+    iterate_train(trX, teX, trY, teY,numBits)
 
 if __name__ == "__main__":
   main()
