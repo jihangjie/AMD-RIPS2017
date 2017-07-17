@@ -1,15 +1,15 @@
 from load_mnist import mnist
 
-from cnn_train import iterate_train
+from network.cnn_train import iterate_train
 
 def main():
-    trX, teX, trY, teY = mnist(onehot=True)
+  trX, teX, trY, teY = mnist(onehot=True)
 
-    trX = trX.reshape(-1, 1, 28, 28)
-    teX = teX.reshape(-1, 1, 28, 28)
-    numBits=32
+  trX = trX.reshape(-1, 1, 28, 28)
+  teX = teX.reshape(-1, 1, 28, 28)
+  numbits=32
 
-    iterate_train(trX, teX, trY, teY,numBits)
+  iterate_train(trX, teX, trY, teY,numbits, "mnist_FL{}".format(numbits))
 
 if __name__ == "__main__":
   main()
