@@ -75,22 +75,4 @@ def init_variables(x, t, params, dtype):
 
 	return p_y_given_x, y, cost, updates, train, predict
 
-'''
-def train_iteration(x_train, t_train, train, batch_size=50, num_iterations=50):
-	'''
-	@x_train: train data x
-	@t_train: train data y
-	@train: the function needs to be trained
-	return the updated train function
-	''' 
-	for i in range(num_iterations):
-	    print "iteration %d" % (i + 1)
-	    for start in range(0, len(x_train), batch_size):
-	    	start_time = time.time()
-	        x_batch = x_train[start:start + batch_size]
-	        t_batch = t_train[start:start + batch_size]
-	        cost = train(x_batch, t_batch)
-	        print("--- %s seconds ---" % (time.time() - start_time))
-	return train
-'''
 
