@@ -59,9 +59,9 @@ def iterate_train(trX, teX, trY, teY,numPrecision):
     X = T.ftensor4()
     Y = T.fmatrix()
 
-    w_c1 = init_weights((4, 1, 3, 3), dtype0)
+    w_c1 = init_weights((4, 1, 3, 3), dtype0) # output size, input size, 3*3: filter size? can change the last two whatever size!
     b_c1 = init_weights((4,), dtype0)
-    w_c2 = init_weights((8, 4, 3, 3), dtype0)
+    w_c2 = init_weights((8, 4, 4, 4), dtype0)
     b_c2 = init_weights((8,), dtype0)
     w_h3 = init_weights((8 * 4 * 4, 100), dtype0)
     b_h3 = init_weights((100,), dtype0)
@@ -77,7 +77,7 @@ def iterate_train(trX, teX, trY, teY,numPrecision):
 
     # train_model with mini-batch training
     batch_size = 128
-    for i in range(50):
+    for i in range(500):
         print "iteration %d" % (i + 1)
         t = time.time()
         for start in range(0, len(trX), batch_size):

@@ -67,7 +67,7 @@ def init_variables(x, t, params, dtype):
 
 	cost = T.mean(T.nnet.categorical_crossentropy(p_y_given_x, t))
 
-	updates = momentum(cost, params, dtype, learning_rate=0.01, momentum=0.9)
+	updates = momentum(cost, params, dtype, learning_rate=0.05, momentum=0.9) # default learning rate: 0.01
 
 	# compile theano functions
 	train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True)
