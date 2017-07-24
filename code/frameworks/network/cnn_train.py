@@ -40,7 +40,6 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled"):
   
   trX, trY, X, Y = cast_4(trX, trY, X, Y, dtype0)
 
-  #params = [w, w2, w3, w4, w_o]
   params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
 
   py_x, y_x, cost, updates, train, predict = init_variables(X, Y, params, dtype0)

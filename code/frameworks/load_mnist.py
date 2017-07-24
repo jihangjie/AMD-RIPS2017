@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-datasets_dir = 'data/mnist/' # TODO: change here to your own dir
+datasets_dir = 'data/mnist/'
 
 def one_hot(x,n):
   if type(x) == list:

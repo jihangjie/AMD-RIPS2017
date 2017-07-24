@@ -9,6 +9,8 @@ def main():
   teX = teX.reshape(-1, 1, 28, 28)
   numbits=32
 
+  print trY[4]
+
   iterate_train(trX, teX, trY, teY,numbits, "mnist_FL{}".format(numbits))
 
 if __name__ == "__main__":
