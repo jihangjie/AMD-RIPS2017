@@ -6,43 +6,13 @@ import truncate
 
 from cnn_model import init_weights, init_variables
 
-def truncate_4d(x, bitsize=32):
-  ''' truncate theano varibale
-    @param x: theano var
-    @return theano variable with truncated value
-  '''
+truncate_vectorize = np.vectorize(truncate.truncate, otypes=[np.float32])
+
+def truncate(x, bitsize=32):
   value = x.eval()
-  for dim1 in range(value.shape[0]):
-    for dim2 in range(value.shape[1]):
-      for dim3 in range(value.shape[2]):
-        for dim4 in range(value.shape[3]):
-          value[dim1][dim2][dim3][dim4] = truncate.truncate(value[dim1][dim2][dim3][dim4], bitsize)
+  value = truncate_vectorize(value, bitsize)
   x.set_value(value)
   return x
-
-def truncate_2d(x, bitsize=32):
-  ''' truncate theano varibale
-    @param x: theano var
-    @return theano variable with truncated value
-  '''
-  value = x.eval()
-  for row in range(value.shape[0]):
-    for col in range(value.shape[1]):
-      value[row][col] = truncate.truncate(value[row][col], bitsize)
-  x.set_value(value)
-  return x
-
-def truncate_1d(x, bitsize=32):
-  ''' truncate theano varibale
-    @param x: theano var
-    @return theano variable with truncated value
-  '''
-  value = x.eval()
-  for num in range(value.shape[0]):
-    value[num] = truncate.truncate(value[num], bitsize)
-  return x
-
-
 
 def cast_4(trX, trY, X, Y, dtype):
   trX = trX.astype(dtype)
@@ -59,7 +29,7 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled"):
   X = T.ftensor4()
   Y = T.fmatrix()
 
-  w_c1 = init_weights((4, 1, 5, 5), dtype0)
+  w_c1 = init_weights((4, 1, 4, 4), dtype0)
   b_c1 = init_weights((4,), dtype0)
   w_c2 = init_weights((8, 4, 3, 3), dtype0)
   b_c2 = init_weights((8,), dtype0)
@@ -86,23 +56,24 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled"):
   batch_size = 128
   with open(savefile, 'w+') as f:
     for i in range(50):
-      print "iteration %d" % (i + 1)
       t = time.time()
       for start in range(0, len(trX), batch_size):
         x_batch = trX[start:start + batch_size]
         t_batch = trY[start:start + batch_size]
         cost = train(x_batch, t_batch)
-        w_c1 = truncate_4d(w_c1, numPrecision)
-        b_c1 = truncate_1d(b_c1, numPrecision)
-        w_c2 = truncate_4d(w_c2, numPrecision)
-        b_c2 = truncate_1d(b_c2, numPrecision)
-        w_h3 = truncate_2d(w_h3, numPrecision)
-        b_h3 = truncate_1d(b_h3, numPrecision)
-        w_o = truncate_2d(w_o, numPrecision)
-        b_o = truncate_1d(b_o, numPrecision)
+        # truncate all params
+        t1 = time.time()
+        w_c1 = truncate(w_c1, numPrecision)
+        b_c1 = truncate(b_c1, numPrecision)
+        w_c2 = truncate(w_c2, numPrecision)
+        b_c2 = truncate(b_c2, numPrecision)
+        w_h3 = truncate(w_h3, numPrecision)
+        b_h3 = truncate(b_h3, numPrecision)
+        w_o = truncate(w_o, numPrecision)
+        b_o = truncate(b_o, numPrecision)
       print("Iteration {}: {} seconds".format(i, time.time() - t))
       accuracy = np.mean(np.argmax(teY, axis=1) == predict(teX))
       print(accuracy)
-      f.write(str(accuracy))
+      f.write("{}\n".format(accuracy))
   
   print("Finished!")
