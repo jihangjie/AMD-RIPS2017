@@ -48,28 +48,32 @@ def momentum(cost, params, dtype, learning_rate, momentum):
   return updates
 
 def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
+  # Two Convolutional Layers
   c1 = rectify(conv2d(x, w_c1) + b_c1.dimshuffle('x', 0, 'x', 'x'))
   p1 = pool_2d(c1, (3, 3), ignore_border = False)
 
   c2 = rectify(conv2d(p1, w_c2) + b_c2.dimshuffle('x', 0, 'x', 'x'))
   p2 = pool_2d(c2, (2, 2), ignore_border = False)
-
+  
+  # Dense Layer
   p2_flat = p2.flatten(2)
   h3 = rectify(T.dot(p2_flat, w_h3) + b_h3)
 
+  # Output Layer
   p_y_given_x = T.nnet.softmax(T.dot(h3, w_o) + b_o)
   return p_y_given_x
 
 def init_variables(x, t, params, dtype):
 	p_y_given_x = model(x, *params)
 	print(p_y_given_x.shape)
+	
+	# provides only the first row/col of data
 	y = T.argmax(p_y_given_x, axis=1)
 
 	cost = T.mean(T.nnet.categorical_crossentropy(p_y_given_x, t))
 
 	updates = momentum(cost, params, dtype, learning_rate=0.05, momentum=0.9) # default learning rate: 0.01
-
-	# compile theano functions
+	
 	train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True)
 	predict = theano.function([x], y, allow_input_downcast=True)
 
