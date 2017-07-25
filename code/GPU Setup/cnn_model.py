@@ -18,7 +18,7 @@ def init_weights(shape, dtype):
     return theano.shared(floatX(np.random.randn(*shape) * 0.01, dtype))
 
 def model(x):
-#def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
+#def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o) was not used since in general they cause dim errors
     l=lasagne.layers.InputLayer(shape=(None, 1, 28, 28), input_var=x)
 
     l=lasagne.layers.Conv2DLayer(l, num_filters=32,filter_size=(5,5),nonlinearity=lasagne.nonlinearities.rectify,W=lasagne.init.GlorotUniform())
@@ -49,6 +49,8 @@ def init_variables(x,t):
     cost=cost.mean()
     params=lasagne.layers.get_all_params(l, trainable=True)
     updates=lasagne.updates.momentum(cost, params, learning_rate=0.01, momentum=0.9)
+    
+    #most errors are caused by these two lines
     train = theano.function([x,t], cost, updates=updates,allow_input_downcast=True)
     predict = theano.function([x,t],[test_loss,test_acc],allow_input_downcast=True)
     return train, predict
