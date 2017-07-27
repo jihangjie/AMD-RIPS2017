@@ -1,0 +1,4 @@
+Plots showing the convergence speed when we vary the number of layers of the CNN in framework
+
+- For Two Conv Two Dense, the plot shows a 50unit Dense to a 100unit Dense
+- Three Conv Layer was explored but the accuracy stayed at 0.1135 through out the 50 epochs
