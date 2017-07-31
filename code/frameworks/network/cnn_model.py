@@ -9,7 +9,7 @@ def floatX(X, dtype):
   return np.asarray(X, dtype=dtype)
 
 def init_weights(shape, dtype):
-  return theano.shared(floatX(np.random.randn(*shape) * 0.01, dtype))
+  return theano.shared(floatX(np.zeros(shape), dtype))
 
 def rectify(x):
   return T.maximum(x, 0.)

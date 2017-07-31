@@ -4,7 +4,7 @@ import theano.tensor as T
 import numpy as np
 import truncate
 
-from cnn_model import init_weights, init_variables
+from cnn_model import init_weights, init_variables, floatX
 
 truncate_vectorize = np.vectorize(truncate.truncate, otypes=[np.float32])
 
@@ -21,22 +21,22 @@ def cast_4(trX, trY, X, Y, dtype):
   Y = T.cast(Y, dtype=dtype)
   return trX, trY, X, Y
 
-def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled"):
+def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0.):
 
   dtype0 = 'float32'
   dtype1 = 'float64'
 
   X = T.ftensor4()
-  Y = T.fmatrix()
+  Y = T.fmatrix()  
 
-  w_c1 = init_weights((4, 1, 4, 4), dtype0)
-  b_c1 = init_weights((4,), dtype0)
-  w_c2 = init_weights((8, 4, 3, 3), dtype0)
-  b_c2 = init_weights((8,), dtype0)
-  w_h3 = init_weights((8 * 4 * 4, 100), dtype0)
-  b_h3 = init_weights((100,), dtype0)
-  w_o = init_weights((100, 10), dtype0)
-  b_o = init_weights((10,), dtype0)
+  w_c1 = theano.shared(floatX(np.zeros((4, 1, 4, 4)) + perturbation, dtype0))
+  b_c1 = theano.shared(floatX(np.zeros((4,)) + perturbation, dtype0))
+  w_c2 = theano.shared(floatX(np.zeros((8, 4, 3, 3)) + perturbation, dtype0))
+  b_c2 = theano.shared(floatX(np.zeros((8,)) + perturbation, dtype0))
+  w_h3 = theano.shared(floatX(np.zeros((8 * 4 * 4, 100)) + perturbation, dtype0))
+  b_h3 = theano.shared(floatX(np.zeros((100,)) + perturbation, dtype0))
+  w_o = theano.shared(floatX(np.zeros((100, 10)) + perturbation, dtype0))
+  b_o = theano.shared(floatX(np.zeros((10, )) + perturbation, dtype0))
   
   trX, trY, X, Y = cast_4(trX, trY, X, Y, dtype0)
 

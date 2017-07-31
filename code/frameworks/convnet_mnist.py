@@ -2,16 +2,19 @@ from load_mnist import mnist
 
 from network.cnn_train import iterate_train
 
+import numpy as np
+
 def main():
   trX, teX, trY, teY = mnist(onehot=True)
 
   trX = trX.reshape(-1, 1, 28, 28)
   teX = teX.reshape(-1, 1, 28, 28)
-  numbits=32
+  perturbation=0.001
 
   print trY[4]
 
-  iterate_train(trX, teX, trY, teY,numbits, "mnist_FL{}".format(numbits))
+  for perturbation in np.arange(0, 0.01, 0.002):
+    iterate_train(trX, teX, trY, teY, 32, "mnist_PERT{}_raw".format(perturbation), perturbation)
 
 if __name__ == "__main__":
   main()
