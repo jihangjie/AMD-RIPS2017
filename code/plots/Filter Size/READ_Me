@@ -1,4 +1,4 @@
-weight = uniform zeros
+weight = uniform zeros - randn(*shape)*0, not the zeros function
 Layer = 2C1D
         w_c1 = init_weights((4, 1, 4, 4), dtype0)
         b_c1 = init_weights((4,), dtype0)
