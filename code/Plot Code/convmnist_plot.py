@@ -41,12 +41,13 @@ def plot_data(filename, data):
   # label plot (axes, title, etc)
   x = [num*10 for num in range(1, len(data)+1)]
   plt.plot(x, data, label=label)
-  plt.xlabel("Iterations")
+  plt.xlabel("Epochs")
   plt.ylabel("Accuracy")
   plt.title(savename)
 
-  plt.legend(loc=0)
+  plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,prop={'size':9})
   plt.axis([10, 500, 0, 1])
+  plt.subplots_adjust(right=0.8)
 
 def main():
   ''' if textfiles given as arguments, plot data from those files
