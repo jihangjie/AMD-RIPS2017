@@ -24,7 +24,6 @@ def cast_4(trX, trY, X, Y, dtype):
 def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0.002):
 
   dtype0 = 'float32'
-  dtype1 = 'float64'
 
   X = T.ftensor4()
   Y = T.fmatrix()  
