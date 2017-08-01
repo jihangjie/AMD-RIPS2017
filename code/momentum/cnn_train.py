@@ -92,7 +92,7 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", pert
       accuracy = np.mean(np.argmax(teY, axis=1) == predict(teX))
       if accuracy > 0.2 and accuracy - oldAccuracy < 0.02 and tempChanged == False:
         py_x, y_x, cost, updates, train, predict = init_variables(1, X, Y, params, dtype0, oldGrad)
-        print("Momentum changing from 0.9 to 0.5")
+        print("Momentum changing from 0.5 to 0.9")
       oldAccuracy = accuracy
       print(accuracy)
       f.write("{}\n".format(accuracy))
