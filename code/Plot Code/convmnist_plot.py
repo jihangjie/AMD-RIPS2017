@@ -46,7 +46,7 @@ def plot_data(filename, data):
   plt.title(savename, y=1.05)
 
   plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,prop={'size':9})
-  plt.axis([10, 500, 0, 1])
+  plt.axis([10, 50, 0, 1])
   plt.subplots_adjust(right=0.8)
 
 def main():
