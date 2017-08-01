@@ -4,7 +4,7 @@ import theano.tensor as T
 import numpy as np
 import truncate
 
-from cnn_model import init_weights, init_variables, floatX
+from cnn_model import init_weights, init_biases, init_variables, floatX
 
 truncate_vectorize = np.vectorize(truncate.truncate, otypes=[np.float32])
 
@@ -21,38 +21,40 @@ def cast_4(trX, trY, X, Y, dtype):
   Y = T.cast(Y, dtype=dtype)
   return trX, trY, X, Y
 
-def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0.):
+def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0., batch_size=128):
 
-  dtype0 = 'float32'
-  dtype1 = 'float64'
+  dtype = 'float32'
 
   X = T.ftensor4()
   Y = T.fmatrix()  
 
-  w_c1 = theano.shared(floatX(np.zeros((4, 1, 4, 4)) + perturbation, dtype0))
-  b_c1 = theano.shared(floatX(np.zeros((4,)) + perturbation, dtype0))
-  w_c2 = theano.shared(floatX(np.zeros((8, 4, 3, 3)) + perturbation, dtype0))
-  b_c2 = theano.shared(floatX(np.zeros((8,)) + perturbation, dtype0))
-  w_h3 = theano.shared(floatX(np.zeros((8 * 4 * 4, 100)) + perturbation, dtype0))
-  b_h3 = theano.shared(floatX(np.zeros((100,)) + perturbation, dtype0))
-  w_o = theano.shared(floatX(np.zeros((100, 10)) + perturbation, dtype0))
-  b_o = theano.shared(floatX(np.zeros((10, )) + perturbation, dtype0))
+  w_c1 = init_weights((4, 1, 4, 4), dtype)
+  #b_c1 = init_weights((4,), dtype)
+  b_c1 = init_biases((4,), dtype)
+  w_c2 = init_weights((8, 4, 3, 3), dtype)
+  #b_c2 = init_weights((8,), dtype)
+  b_c2 = init_biases((8,), dtype)
+  w_h3 = init_weights((8 * 4 * 4, 100), dtype)
+  #b_h3 = init_weights((100,), dtype)
+  b_h3 = init_biases((100,), dtype)
+  w_o = init_weights((100, 10), dtype)
+  #b_o = init_weights((10,), dtype)
+  b_o = init_biases((10,), dtype)
   
-  trX, trY, X, Y = cast_4(trX, trY, X, Y, dtype0)
+  trX, trY, X, Y = cast_4(trX, trY, X, Y, dtype)
 
   params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
 
-  py_x, y_x, cost, updates, train, predict = init_variables(X, Y, params, dtype0)
+  py_x, y_x, cost, updates, train, predict = init_variables(X, Y, params, dtype)
 
   # determine location to save data
-  savefile = "data/output/{}.txt".format(savename)
+  savefile = "data/output/{}_sqrt.txt".format(savename)
   try:
     os.stat("./data/output")
   except:
     os.mkdir("./data/output")
 
   # train_model with mini-batch training
-  batch_size = 128
   with open(savefile, 'w+') as f:
     for i in range(50):
       t = time.time()
