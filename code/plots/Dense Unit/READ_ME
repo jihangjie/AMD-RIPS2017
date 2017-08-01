@@ -1,0 +1,13 @@
+Weight = random constant
+RMSprop
+Use two convolutional layers and one dense layer
+
+  w_c1 = init_weights((4, 1, 4, 4), dtype0)  
+  b_c1 = init_weights((4,), dtype0)
+  w_c2 = init_weights((8, 4, 3, 3), dtype0)
+  b_c2 = init_weights((8,), dtype0)
+  
+  w_h5 = init_weights((128, this is the number we change), dtype0)
+  b_h5 = init_weights((this is the number we change,), dtype0)
+  w_o = init_weights((this is the number we change, 10), dtype0)
+  b_o = init_weights((10,), dtype0)
