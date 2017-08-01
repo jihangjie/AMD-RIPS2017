@@ -1,4 +1,43 @@
-Plots showing the convergence speed when we vary the number of layers of the CNN in framework
+Plots showing the convergence when we vary the number of layers and the bitsize of the CNN in framework
+Weight = constant random seed * 0.01
+RMSprop
 
-- For Two Conv Two Dense, the plot shows a 50unit Dense to a 100unit Dense
-- Three Conv Layer was explored but the accuracy stayed at 0.1135 through out the 50 epochs
+
+1C1D
+4 1 4 4   | 7 7
+64 100    |
+100 10    |
+
+
+2C1D
+4 1 4 4   | 3 3
+8 4 3 3   | 2 2 
+128 100   |
+100 10    |
+
+
+3C1D
+4  1 4 4   | 3 3
+8  4 3 3   | 2 2 
+32 8 2 2   | 2 2 
+128 100    |
+100 10     |
+
+
+4C1D
+4  1  4 4   | 3 3
+8  4  3 3   | 2 2 
+32 8  2 2   | 2 2 
+32 32 1 1   | 1 1
+128 100     |
+100 10      |
+
+
+5C1D
+4  1  4 4   | 3 3
+8  4  3 3   | 2 2 
+32 8  2 2   | 2 2 
+32 32 1 1   | 1 1
+32 32 1 1   | 1 1
+128 100     |
+100 10      |
