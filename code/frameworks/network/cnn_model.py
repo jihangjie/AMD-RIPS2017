@@ -8,9 +8,9 @@ from theano.tensor.signal.pool import pool_2d
 def floatX(X, dtype):
   return np.asarray(X, dtype=dtype)
 
-def init_weights(shape, dtype):
+def init_weights(shape, dtype, perturbation = 0.):
   np.random.seed(42)
-  return theano.shared(floatX(np.random.randn(*shape) * .01, dtype))
+  return theano.shared(floatX(np.random.randn(*shape) * .01 + perturbation, dtype))
 
 def rectify(x):
   return T.maximum(x, 0.)

@@ -17,8 +17,9 @@ def main():
   print "x_test shape: {}".format(x_test.shape)
   print t_train[0]
 
-  for bitsize in [12, 13, 14, 15, 16, 18, 20, 32]:
-    iterate_train(x_train, x_test, t_train, t_test, bitsize, "cifar10_FL{}".format(bitsize))
+  for bitsize in [18, 20, 22, 24, 28, 32]:
+    for perturbation in np.arange(0, 0.01, 0.002):
+      iterate_train(x_train, x_test, t_train, t_test, bitsize, "cifar10_FL{}_PERT{}".format(bitsize, perturbation))
 
 if __name__ == "__main__":
   main()
