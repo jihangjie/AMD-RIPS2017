@@ -1,0 +1,43 @@
+Plots showing the convergence when we vary the number of layers and the bitsize of the CNN in framework
+Weight = constant random seed * 0.01
+RMSprop
+
+
+1C1D
+4 1 4 4   | 7 7
+64 100    |
+100 10    |
+
+
+2C1D
+4 1 4 4   | 3 3
+8 4 3 3   | 2 2 
+128 100   |
+100 10    |
+
+
+3C1D
+4  1 4 4   | 3 3
+8  4 3 3   | 2 2 
+32 8 2 2   | 2 2 
+128 100    |
+100 10     |
+
+
+4C1D
+4  1  4 4   | 3 3
+8  4  3 3   | 2 2 
+32 8  2 2   | 2 2 
+32 32 1 1   | 1 1
+128 100     |
+100 10      |
+
+
+5C1D
+4  1  4 4   | 3 3
+8  4  3 3   | 2 2 
+32 8  2 2   | 2 2 
+32 32 1 1   | 1 1
+32 32 1 1   | 1 1
+128 100     |
+100 10      |
