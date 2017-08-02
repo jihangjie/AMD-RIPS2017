@@ -1,16 +1,29 @@
 import theano
 import theano.tensor as T
 import numpy as np
+import math
 
 from theano.tensor.nnet.conv import conv2d
 from theano.tensor.signal.pool import pool_2d
 
+from functools import reduce
+from operator import mul
+
 def floatX(X, dtype):
   return np.asarray(X, dtype=dtype)
 
-def init_weights(shape, dtype, perturbation = 0.):
+def prod(iterable):
+  return reduce(mul, iterable, 1)
+
+def init_weights(shape, dtype):
   np.random.seed(42)
-  return theano.shared(floatX(np.random.randn(*shape) * .01 + perturbation, dtype))
+  # calibrating variances with 1/sqrt(n)
+  return theano.shared(floatX(np.random.randn(*shape) * math.sqrt(2 / prod(shape)), dtype))
+  #return theano.shared(floatX(np.random.randn(*shape) * .01, dtype))
+
+def init_biases(shape, dtype):
+  np.random.seed(42)
+  return theano.shared(floatX(np.random.randn(*shape) * math.sqrt(2 / prod(shape)), dtype))
 
 def cast_4(trX, trY, X, Y, dtype):
   trX = trX.astype(dtype)
