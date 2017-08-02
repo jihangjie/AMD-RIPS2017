@@ -13,17 +13,9 @@ def main():
 
   print trY[4]
 
-  for bitsize in [16, 18]:
-    for perturbation in [0.002]:
-      iterate_train(trX, teX, trY, teY, 32, "mnist_FL{}_PERT{}".format(bitsize, perturbation), perturbation)
-  #for bitsize in [12, 13, 14, 15, 16, 18, 20]:
-  #  for perturbation in np.arange(0, 0.01, 0.002):
-  #    iterate_train(trX, teX, trY, teY, 32, "mnist_FL{}_PERT{}".format(bitsize, perturbation), perturbation)
-
-  for bitsize in [32]:
-    for perturbation in np.arange(0.006, 0.01, 0.002):
-      iterate_train(trX, teX, trY, teY, 32, "mnist_FL{}_PERT{}".format(bitsize, perturbation), perturbation)
-      
+  for bitsize in [12, 13, 14, 15, 16, 18, 20]:
+    for perturbation in np.arange(0, 0.01, 0.002):
+      iterate_train(trX, teX, trY, teY, bitsize, "mnist_FL{}_PERT{}".format(bitsize, perturbation), perturbation)
   
 if __name__ == "__main__":
   main()
