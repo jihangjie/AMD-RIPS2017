@@ -1,3 +1,4 @@
+#This version has both dropout and momentum
 import theano
 import theano.tensor as T
 import numpy as np
