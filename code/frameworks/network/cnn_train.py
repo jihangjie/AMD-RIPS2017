@@ -21,7 +21,7 @@ def cast_4(trX, trY, X, Y, dtype):
   Y = T.cast(Y, dtype=dtype)
   return trX, trY, X, Y
 
-def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0., batch_size=128):
+def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", perturbation = 0., batch_size=128, dense_units = 100):
 
   dtype = 'float32'
 
@@ -34,10 +34,10 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", pert
   w_c2 = init_weights((8, 4, 3, 3), dtype)
   #b_c2 = init_weights((8,), dtype)
   b_c2 = init_biases((8,), dtype)
-  w_h3 = init_weights((8 * 4 * 4, 100), dtype)
+  w_h3 = init_weights((8 * 4 * 4, dense_units), dtype)
   #b_h3 = init_weights((100,), dtype)
-  b_h3 = init_biases((100,), dtype)
-  w_o = init_weights((100, 10), dtype)
+  b_h3 = init_biases((dense_units,), dtype)
+  w_o = init_weights((dense_units, 10), dtype)
   #b_o = init_weights((10,), dtype)
   b_o = init_biases((10,), dtype)
   

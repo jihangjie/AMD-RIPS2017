@@ -10,8 +10,9 @@ def main():
   teX = teX.reshape(-1, 1, 28, 28)
 
   for bitsize in [12, 13, 14, 15, 16, 18, 20]:
-    for perturbation in np.arange(0, 0.01, 0.002):
-      iterate_train(trX, teX, trY, teY, bitsize, "mnist_FL{}_PERT{}".format(bitsize, perturbation), perturbation)
+    for dense_units in [20, 50, 80, 100, 120]:
+      print "dense units: ", dense_units
+      iterate_train(trX, teX, trY, teY, bitsize, "mnist_FL{}_UNIT{}".format(bitsize, dense_units), dense_units = dense_units)
   
 if __name__ == "__main__":
   main()

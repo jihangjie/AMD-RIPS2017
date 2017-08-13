@@ -119,8 +119,8 @@ def init_variables(x, t, params, dtype):
   cost = T.mean(T.nnet.categorical_crossentropy(p_y_given_x, t))
 
   #updates = momentum(cost, params, dtype, learning_rate=0.05, momentum=0.9) # default learning rate: 0.01
-  #updates = RMSprop(cost, params, dtype)
-  updates = Adam(cost, params, dtype)
+  updates = RMSprop(cost, params, dtype)
+  #updates = Adam(cost, params, dtype)
 
   train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True)
   predict = theano.function([x], y, allow_input_downcast=True)
