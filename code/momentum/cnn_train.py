@@ -1,3 +1,4 @@
+#This version has dropout, momentum, adam, 2 conv and 1 dense, stochastic truncation
 import os, time
 import theano
 import theano.tensor as T
@@ -8,7 +9,7 @@ from cnn_model import init_weights, init_variables, floatX
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 np.random.seed(1234)
-truncate_vectorize = np.vectorize(truncate.truncate, otypes=[np.float32])
+truncate_vectorize = np.vectorize(truncate.truncate_stochastic, otypes=[np.float32])
 rng = np.random.RandomState(1234)
 srng = RandomStreams(rng.randint(999999))
 
@@ -56,7 +57,7 @@ def iterate_train(trX, teX, trY, teY, numPrecision=32, savename="untitled", pert
   X = T.ftensor4()
   Y = T.fmatrix()
   
-  w_c1 = init_weights(26*26,(4, 1, 3, 3), dtype0, perturbation)
+  w_c1 = init_weights(4*1*3*3,(4, 1, 3, 3), dtype0, perturbation)
   b_c1 = theano.shared(floatX(np.zeros((4,)), dtype0))
   w_c2 = init_weights(4*11*11,(8, 4, 3, 3), dtype0, perturbation)
   b_c2 = theano.shared(floatX(np.zeros((8,)), dtype0))
