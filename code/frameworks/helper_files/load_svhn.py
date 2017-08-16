@@ -36,7 +36,7 @@ def convert_greyscale(img_data):
 
   return grey_img
 
-def load_data():
+def load_svhn():
   ''' loads image data
       @param filename
       @return image data
@@ -44,8 +44,12 @@ def load_data():
   dataset_dir = "data/svhn/"
 
   # load datasets
-  train_data = scipy.io.loadmat("{}train_32x32.mat".format(dataset_dir))
-  test_data = scipy.io.loadmat("{}test_32x32.mat".format(dataset_dir))
+  try:
+    train_data = scipy.io.loadmat("{}train_32x32.mat".format(dataset_dir))
+    test_data = scipy.io.loadmat("{}test_32x32.mat".format(dataset_dir))
+  except:
+    print "SVHN dataset not downloaded! Please run download_svhn.sh first."
+    exit(1)
 
   train_data_x = convert_greyscale(train_data['X'])
   test_data_x = convert_greyscale(test_data['X'])

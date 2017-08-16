@@ -6,8 +6,6 @@ import glob
 
 data_dir = "data/cifar10/cifar-10-batches-py"
 
-class_names_cifar10 = np.load(os.path.join(data_dir, "batches.meta"))
-
 def one_hot(x, n):
   """
   convert index representation to one-hot representation
@@ -15,7 +13,6 @@ def one_hot(x, n):
   x = np.array(x)
   assert x.ndim == 1
   return np.eye(n)[x]
-
 
 def _load_batch_cifar10(filename, dtype='float64'):
   """
@@ -33,6 +30,12 @@ def _grayscale(a):
 
 
 def cifar10(dtype='float64', grayscale=True):
+  try:
+    class_names_cifar10 = np.load(os.path.join(data_dir, "batches.meta"))
+  except:
+    print "CIFAR10 dataset not downloaded! Please run download_cifar10.sh first."
+    exit(1)
+
   # train
   x_train = []
   t_train = []

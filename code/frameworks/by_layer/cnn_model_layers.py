@@ -23,4 +23,3 @@ def dense_layer(x, w_h, b_h):
 def output_layer(h, w_o, b_o):
   p_y_given_x = T.nnet.softmax(T.dot(h, w_o) + b_o)
   return p_y_given_x
-

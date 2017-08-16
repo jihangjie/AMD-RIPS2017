@@ -13,20 +13,25 @@ def one_hot(x,n):
 
 def mnist(ntrain=60000,ntest=10000,onehot=True):
   data_dir = datasets_dir
-  fd = open(os.path.join(data_dir,'train-images-idx3-ubyte'))
-  loaded = np.fromfile(file=fd,dtype=np.uint8)
+  try:
+    fd1 = open(os.path.join(data_dir,'train-images-idx3-ubyte'))
+    fd2 = open(os.path.join(data_dir,'train-labels-idx1-ubyte'))
+    fd3 = open(os.path.join(data_dir,'t10k-images-idx3-ubyte'))
+    fd4 = open(os.path.join(data_dir,'t10k-labels-idx1-ubyte'))
+  except:
+    print "MNIST dataset not downloaded! Please run download_mnist.sh first."
+    exit(1)
+
+  loaded = np.fromfile(file=fd1,dtype=np.uint8)
   trX = loaded[16:].reshape((60000,28*28)).astype(float)
 
-  fd = open(os.path.join(data_dir,'train-labels-idx1-ubyte'))
-  loaded = np.fromfile(file=fd,dtype=np.uint8)
+  loaded = np.fromfile(file=fd2,dtype=np.uint8)
   trY = loaded[8:].reshape((60000))
 
-  fd = open(os.path.join(data_dir,'t10k-images-idx3-ubyte'))
-  loaded = np.fromfile(file=fd,dtype=np.uint8)
+  loaded = np.fromfile(file=fd3,dtype=np.uint8)
   teX = loaded[16:].reshape((10000,28*28)).astype(float)
 
-  fd = open(os.path.join(data_dir,'t10k-labels-idx1-ubyte'))
-  loaded = np.fromfile(file=fd,dtype=np.uint8)
+  loaded = np.fromfile(file=fd4,dtype=np.uint8)
   teY = loaded[8:].reshape((10000))
 
   trX = trX/255.
