@@ -1,4 +1,4 @@
-#This version has both dropout and momentum
+#This version has dropout, momentum, adam, 2 conv and 1 dense, stochastic truncation
 import theano
 import theano.tensor as T
 import numpy as np
@@ -6,14 +6,19 @@ from theano import pp
 from theano.tensor.nnet.conv import conv2d
 from theano.tensor.signal.pool import pool_2d
 import math
+from functools import reduce
+from operator import mul
 
 def floatX(X, dtype):
   return np.asarray(X, dtype=dtype)
 
+def prod(iterable):
+  return reduce(mul, iterable, 1)
+
+#The two ways to initialize weights are 1. product of last 3 dimensions (Stanford) 2. random generalization
 def init_weights(inputShape, shape, dtype, perturbation = 0.):
-  np.random.seed(42)
-  #return theano.shared(floatX(np.random.randn(*shape) * math.sqrt(2 / inputShape), dtype))
-  return theano.shared(floatX(np.random.randn(*shape) * .01 + perturbation, dtype))
+  #np.random.seed(42)
+  return theano.shared(floatX(np.random.randn(*shape) * math.sqrt(2 / prod(shape[1:3])), dtype))
   #return theano.shared(floatX(np.random.randn(*shape) * .01, dtype))
 
 def rectify(x):
@@ -35,7 +40,7 @@ def momentum(cost, params, dtype, oldGrad, dropFilter, learning_rate = 0.05, mom
 
   return updates
 
-def Adam(cost, params, dtype, lr=0.001, b1=0.1, b2=0.001, e=1e-8):
+def Adam(cost, params, dropFilter, dtype, lr=0.001, b1=0.1, b2=0.001, e=1e-8):
   updates = []
   grads = T.grad(cost, params)
   i = theano.shared(floatX(0., dtype))
@@ -44,13 +49,13 @@ def Adam(cost, params, dtype, lr=0.001, b1=0.1, b2=0.001, e=1e-8):
   fix1 = 1. - (1. - b1)**i_t
   fix2 = 1. - (1. - b2)**i_t
   lr_t = lr * (T.sqrt(fix2) / fix1)
-  for p, g in zip(params, grads):
+  for p, g, f in zip(params, grads, dropFilter):
       m = theano.shared(p.get_value() * 0.)
       v = theano.shared(p.get_value() * 0.)
-      m_t = (b1 * g) + ((1. - b1) * m)
-      v_t = (b2 * T.sqr(g)) + ((1. - b2) * v)
+      m_t = np.multiply((b1 * g), f) + ((1. - b1) * m)
+      v_t = np.multiply((b2 * T.sqr(g)), f) + ((1. - b2) * v)
       g_t = m_t / (T.sqrt(v_t) + e * T.sqrt(fix2))
-      p_t = p - (lr_t * g_t)
+      p_t = p - np.multiply((lr_t * g_t), f) 
       m_t = T.cast(m_t, dtype)
       v_t = T.cast(v_t, dtype)
       p_t = T.cast(p_t, dtype)
@@ -95,12 +100,13 @@ def init_variables(previousTime, x, t, params, hw_c1, hw_c2, hw_h3, hw_o, dtype,
   y = T.argmax(p_y_given_x, axis=1)
 
   cost = T.mean(T.nnet.categorical_crossentropy(p_y_given_x, t))
+  #Change gradient descent parameters once convergence speed drops
   if previousTime == 0:
-    #updates = Adam(cost, params, dtype, lr=0.005) # default learning rate: 0.01
-    updates = momentum(cost, params, dtype, oldGrad, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], learning_rate=0.05, momentum=0.5)
+    updates = Adam(cost, params, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], dtype, lr=0.001) # default learning rate: 0.01
+    #updates = momentum(cost, params, dtype, oldGrad, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], learning_rate=0.02, momentum=0.5)
   else:
-    #updates = Adam(cost, params, dtype, lr=0.005)
-    updates = momentum(cost, params, dtype, oldGrad, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], learning_rate=0.05, momentum=0.9)
+    updates = Adam(cost, params, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], dtype, lr=0.001)
+    #updates = momentum(cost, params, dtype, oldGrad, [hw_c1, 1, hw_c2, 1, hw_h3, 1, hw_o, 1], learning_rate=0.01, momentum=0.9)
   train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True)
   
   p_y_given_xTest = model(x, 1, hw_c1, hw_c2, hw_h3, hw_o, *params)
