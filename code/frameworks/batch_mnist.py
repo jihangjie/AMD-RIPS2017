@@ -1,12 +1,6 @@
 from helper_files.load_mnist import load_data
 from by_batch.cnn_train import iterate_train
 
-def load_data():
-  train_x, test_x, train_y, test_y = mnist(onehot=True)
-  train_x = train_x.reshape(-1, 1, 28, 28)
-  test_x = test_x.reshape(-1, 1, 28, 28)
-  return train_x, test_x, train_y, test_y
-
 def main():
   train_x, test_x, train_y, test_y = load_data()
 
