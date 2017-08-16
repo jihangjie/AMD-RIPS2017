@@ -5,7 +5,7 @@ not in any sub-directories.
 
 In order to run the CNN, you must first:
 * have Theano and NumPy packages installed
-* download the dataset you wish to use (e.g. run `download_mnist.sh` for MNIST)
+* download the dataset you wish to use (e.g. run `download_mnist.sh` for MNIST), one can download the dataset online and place it under data/<dataset_name> directory (e.g. the MNIST dataset could be put under data/mnist)
 
 You can then run the batch/layer python scripts. Feel free to edit the
 parameters as necessary for what you would like to test.
