@@ -1,3 +1,4 @@
+import theano
 import numpy as np
 import os
 import cPickle as pickle
@@ -5,6 +6,12 @@ import glob
 
 
 data_dir = "data/cifar10/cifar-10-batches-py"
+
+def load_data():
+  train_x, train_y, test_x, test_y = cifar10(dtype=theano.config.floatX)
+  train_x = train_x.reshape(-1, 1, 32, 32) 
+  test_x = test_x.reshape(-1, 1, 32, 32) 
+  return train_x, train_y, test_x, test_y
 
 def one_hot(x, n):
   """

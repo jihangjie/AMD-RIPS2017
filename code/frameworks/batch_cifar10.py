@@ -1,13 +1,7 @@
 import theano
 import numpy as np
-from helper_files.load_cifar10 import cifar10
+from helper_files.load_cifar10 import load_data
 from by_batch.cnn_train import iterate_train
-
-def load_data():
-  train_x, train_y, test_x, test_y = cifar10(dtype=theano.config.floatX)
-  train_x = train_x.reshape(-1, 1, 32, 32)
-  test_x = test_x.reshape(-1, 1, 32, 32)
-  return train_x, train_y, test_x, test_y
 
 def main():
   train_x, train_y, test_x, test_y = load_data()

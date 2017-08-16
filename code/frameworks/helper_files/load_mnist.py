@@ -1,7 +1,14 @@
+import theano
 import numpy as np
 import os
 
 datasets_dir = 'data/mnist/'
+
+def load_data():
+  train_x, test_x, train_y, test_y = mnist(onehot=True)
+  train_x = train_x.reshape(-1, 1, 28, 28) 
+  test_x = test_x.reshape(-1, 1, 28, 28) 
+  return train_x, test_x, train_y, test_y
 
 def one_hot(x,n):
   if type(x) == list:
