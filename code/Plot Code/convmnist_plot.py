@@ -39,14 +39,14 @@ def plot_data(filename, data):
   print "label is {}".format(label)
 
   # label plot (axes, title, etc)
-  x = [num*10 for num in range(1, len(data)+1)]
+  x = [num for num in range(1, len(data)+1)]
   plt.plot(x, data, label=label)
   plt.xlabel("Epochs")
   plt.ylabel("Accuracy")
   plt.title(savename, y=1.05)
 
   plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,prop={'size':9})
-  plt.axis([10, 50, 0, 1])
+  plt.axis([1, 50, 0, 1])
   plt.subplots_adjust(right=0.8)
 
 def main():
